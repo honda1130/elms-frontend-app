@@ -1,0 +1,524 @@
+@import "tailwindcss";
+@source "../lib/gradients.ts";
+
+/* ============================================================
+   Celestial Blue — 幻想的で爽やかなライトテーマ
+   空と海のブルー × 白いガラス × やわらかな光
+   ============================================================ */
+
+:root {
+	--background: #eaf5ff;
+	--foreground: #1e3a55;
+	--sky-deep: #0369a1;
+	--sky-bright: #0ea5e9;
+	--cyan-bright: #22d3ee;
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-geist-sans);
+	--font-mono: var(--font-geist-mono);
+}
+
+html {
+	background: var(--background);
+}
+
+body {
+	background: transparent;
+	color: var(--foreground);
+	min-height: 100vh;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---- 空と海のオーロラ背景（固定レイヤー・ゆっくり漂う） ---- */
+body::before {
+	content: "";
+	position: fixed;
+	inset: -25%;
+	z-index: -2;
+	pointer-events: none;
+	background:
+		radial-gradient(40% 46% at 10% 13%, rgba(186, 230, 253, 0.48), transparent 70%),
+		radial-gradient(38% 46% at 88% 10%, rgba(165, 243, 252, 0.48), transparent 70%),
+		radial-gradient(48% 58% at 80% 88%, rgba(147, 197, 253, 0.42), transparent 70%),
+		radial-gradient(34% 44% at 20% 84%, rgba(103, 232, 249, 0.38), transparent 70%);
+	animation: aurora-drift 26s ease-in-out infinite alternate;
+	will-change: transform;
+}
+
+@keyframes aurora-drift {
+	0% {
+		transform: translate3d(-2%, -1.5%, 0) scale(1) rotate(0.001deg);
+	}
+	50% {
+		transform: translate3d(2.5%, 2%, 0) scale(1.08);
+		filter: hue-rotate(10deg);
+	}
+	100% {
+		transform: translate3d(-1%, 1.5%, 0) scale(1.03);
+		filter: hue-rotate(-4deg);
+	}
+}
+
+/* ---- 光の粒レイヤー（水面のきらめき） ---- */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image:
+		radial-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1.5px),
+		radial-gradient(rgba(125, 211, 252, 0.5) 1px, transparent 1.5px);
+	background-size: 170px 170px, 95px 95px;
+	background-position: 0 0, 45px 65px;
+	opacity: 0.32;
+	mask-image: radial-gradient(ellipse 100% 68% at 50% 0%, black 16%, transparent 90%);
+	-webkit-mask-image: radial-gradient(ellipse 100% 68% at 50% 0%, black 16%, transparent 90%);
+}
+
+/* ---- テキスト選択・スクロールバー ---- */
+::selection {
+	background: rgba(56, 189, 248, 0.3);
+	color: #0c4a6e;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(56, 189, 248, 0.35);
+	border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(56, 189, 248, 0.55);
+}
+
+/* ============================================================
+   ガラス／スカイ ユーティリティ
+   ============================================================ */
+
+/* 白いガラスパネル（カード・一覧・フォームの器） */
+.glass-panel {
+	background: rgba(255, 255, 255, 0.62);
+	border: 1px solid rgba(255, 255, 255, 0.85);
+	backdrop-filter: blur(20px) saturate(150%);
+	-webkit-backdrop-filter: blur(20px) saturate(150%);
+	box-shadow:
+		0 8px 32px rgba(14, 116, 208, 0.12),
+		inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* 不透明寄りの白ガラス（モーダル・ドロップダウン用） */
+.glass-solid {
+	background: rgba(255, 255, 255, 0.94);
+	border: 1px solid rgba(186, 230, 253, 0.9);
+	backdrop-filter: blur(24px) saturate(150%);
+	-webkit-backdrop-filter: blur(24px) saturate(150%);
+	box-shadow: 0 24px 64px rgba(7, 89, 133, 0.22), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* ガラス入力欄 */
+.glass-input {
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px solid rgba(125, 211, 252, 0.5);
+	color: #16405f;
+	transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.glass-input::placeholder {
+	color: rgba(100, 145, 180, 0.65);
+}
+
+.glass-input:focus,
+.glass-input:focus-within {
+	outline: none;
+	border-color: rgba(14, 165, 233, 0.7);
+	background: rgba(255, 255, 255, 0.95);
+	box-shadow:
+		0 0 0 3px rgba(56, 189, 248, 0.18),
+		0 0 22px rgba(125, 211, 252, 0.35);
+}
+
+/* 見出し用のディープブルー（旧: オーロラ文字）
+   グラデーションをやめ、濃紺ブルーの単色で可読性を最優先 */
+.text-aurora {
+	background: none;
+	-webkit-background-clip: initial;
+	background-clip: initial;
+	color: #075985;
+}
+
+/* スカイブルーのプライマリボタン */
+.btn-aurora {
+	background: linear-gradient(120deg, #0284c7 0%, #0ea5e9 55%, #22d3ee 130%);
+	background-size: 170% 170%;
+	background-position: 15% 50%;
+	color: #ffffff;
+	box-shadow:
+		0 4px 20px rgba(14, 165, 233, 0.4),
+		0 2px 8px rgba(34, 211, 238, 0.25),
+		inset 0 1px 0 rgba(255, 255, 255, 0.35);
+	transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.2s ease, opacity 0.2s;
+}
+
+.btn-aurora:hover:not(:disabled) {
+	background-position: 85% 50%;
+	box-shadow:
+		0 6px 28px rgba(14, 165, 233, 0.5),
+		0 3px 14px rgba(34, 211, 238, 0.35),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4);
+	transform: translateY(-1px);
+}
+
+.btn-aurora:active:not(:disabled) {
+	transform: translateY(0);
+}
+
+/* ゴーストボタン（サブアクション用） */
+.btn-ghost {
+	background: rgba(255, 255, 255, 0.7);
+	border: 1px solid rgba(125, 211, 252, 0.6);
+	color: #0c5b8a;
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-ghost:hover:not(:disabled) {
+	background: rgba(224, 242, 254, 0.9);
+	border-color: rgba(56, 189, 248, 0.8);
+	color: #075985;
+}
+
+/* 見出し横のスカイアクセントバー */
+.aurora-bar {
+	background: linear-gradient(to bottom, #38bdf8, #22d3ee, #67e8f9);
+	box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+
+/* ============================================================
+   TipTap リッチテキストエディタ
+   ============================================================ */
+
+.rich-editor-content {
+	min-height: 300px;
+	outline: none;
+	padding: 1rem 1.25rem;
+	font-size: 0.9375rem;
+	line-height: 1.8;
+	color: #1e3a55;
+}
+
+.rich-editor-content p.is-editor-empty:first-child::before {
+	content: attr(data-placeholder);
+	float: left;
+	color: rgba(100, 145, 180, 0.55);
+	pointer-events: none;
+	height: 0;
+}
+
+/* ============================================================
+   Lesson Content — 管理者プレビューと受講画面で共通
+   （空と海のさわやかスタイル）
+   ============================================================ */
+
+/* H1: 海のグラデーションバナー＋白文字（高コントラスト） */
+.lesson-content h1 {
+	font-size: 1.75rem;
+	font-weight: 800;
+	letter-spacing: -0.025em;
+	margin-top: 2.5rem;
+	margin-bottom: 1.25rem;
+	color: #ffffff;
+	background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 60%, #22d3ee 115%);
+	padding: 1rem 1.5rem 1rem 1.75rem;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0 8px 28px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+	text-shadow: 0 1px 4px rgba(3, 63, 99, 0.35);
+}
+
+/* 左の光のストライプ */
+.lesson-content h1::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 6px;
+	background: linear-gradient(to bottom, #bae6fd, #67e8f9, #a5f3fc);
+	box-shadow: 0 0 14px rgba(186, 230, 253, 0.9);
+}
+
+/* 右上の光の輪 */
+.lesson-content h1::after {
+	content: "";
+	position: absolute;
+	right: -28px;
+	top: -28px;
+	width: 110px;
+	height: 110px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+}
+
+/* H2: 薄い水色のガラス帯＋濃紺文字 */
+.lesson-content h2 {
+	font-size: 1.375rem;
+	font-weight: 700;
+	margin-top: 2.25rem;
+	margin-bottom: 0.875rem;
+	color: #075985;
+	background: linear-gradient(120deg, rgba(186, 230, 253, 0.6) 0%, rgba(165, 243, 252, 0.45) 60%, rgba(224, 242, 254, 0.3) 100%);
+	border: 1px solid rgba(125, 211, 252, 0.5);
+	padding: 0.75rem 1.25rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15);
+}
+
+/* H3: スカイブルーの左ボーダー */
+.lesson-content h3 {
+	font-size: 1.125rem;
+	font-weight: 700;
+	margin-top: 1.875rem;
+	margin-bottom: 0.625rem;
+	color: #0369a1;
+	border-left: 4px solid #38bdf8;
+	padding: 0.3rem 0 0.3rem 0.75rem;
+	background: linear-gradient(to right, rgba(224, 242, 254, 0.8), transparent);
+	border-radius: 0 8px 8px 0;
+}
+
+/* H4: シアンのダイヤモンドプレフィックス */
+.lesson-content h4 {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-top: 1.375rem;
+	margin-bottom: 0.5rem;
+	color: #0e7490;
+	padding-left: 1.125rem;
+	position: relative;
+}
+
+.lesson-content h4::before {
+	content: "◆";
+	position: absolute;
+	left: 0;
+	top: 0.075rem;
+	font-size: 0.5rem;
+	color: #22d3ee;
+	text-shadow: 0 0 8px rgba(103, 232, 249, 0.8);
+	line-height: inherit;
+}
+
+.lesson-content p {
+	margin: 0.75rem 0;
+	line-height: 1.85;
+	color: #2b4d6b;
+}
+
+/* UL: 光る水色の球体箇条書き */
+.lesson-content ul {
+	list-style: none;
+	padding-left: 0;
+	margin: 1rem 0;
+}
+
+.lesson-content ul > li {
+	padding-left: 1.5rem;
+	position: relative;
+	margin: 0.5rem 0;
+	line-height: 1.75;
+	color: #2b4d6b;
+}
+
+.lesson-content ul > li::before {
+	content: "";
+	position: absolute;
+	left: 0.125rem;
+	top: 0.55rem;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+	box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+}
+
+/* OL: 海色グラデーションの丸数字バッジ */
+.lesson-content ol {
+	list-style: none;
+	counter-reset: ol-counter;
+	padding-left: 0;
+	margin: 1rem 0;
+}
+
+.lesson-content ol > li {
+	counter-increment: ol-counter;
+	padding-left: 2.25rem;
+	position: relative;
+	margin: 0.5rem 0;
+	line-height: 1.75;
+	color: #2b4d6b;
+}
+
+.lesson-content ol > li::before {
+	content: counter(ol-counter);
+	position: absolute;
+	left: 0;
+	top: 0.15rem;
+	width: 1.5rem;
+	height: 1.5rem;
+	background: linear-gradient(135deg, #0284c7, #0ea5e9 70%, #22d3ee);
+	color: #fff;
+	border-radius: 50%;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	line-height: 1.5rem;
+	text-align: center;
+	box-shadow: 0 0 10px rgba(14, 165, 233, 0.45);
+}
+
+/* ネストリスト */
+.lesson-content ul ul,
+.lesson-content ul ol,
+.lesson-content ol ul,
+.lesson-content ol ol {
+	margin: 0.375rem 0 0.375rem 0.75rem;
+}
+
+/* Blockquote: 水色ガラスの引用 */
+.lesson-content blockquote {
+	border-left: 4px solid #38bdf8;
+	background: linear-gradient(to right, rgba(224, 242, 254, 0.8), rgba(207, 250, 254, 0.5), transparent);
+	padding: 1rem 1.25rem 1rem 1.5rem;
+	margin: 1.5rem 0;
+	border-radius: 0 12px 12px 0;
+	color: #0c5b8a;
+	font-style: italic;
+	position: relative;
+	box-shadow: 0 2px 12px rgba(56, 189, 248, 0.15);
+}
+
+.lesson-content blockquote::before {
+	content: "\201C";
+	position: absolute;
+	top: -0.25rem;
+	left: 1rem;
+	font-size: 3.5rem;
+	color: rgba(125, 211, 252, 0.6);
+	font-family: Georgia, serif;
+	line-height: 1;
+	pointer-events: none;
+}
+
+/* インラインコード: コーラルピンク（ブルーの補色でアクセント） */
+.lesson-content code:not(pre code) {
+	background: #fff1f2;
+	color: #e11d48;
+	border-radius: 5px;
+	padding: 0.15rem 0.45rem;
+	font-size: 1em;
+	font-family: ui-monospace, monospace;
+	border: 1px solid #fecdd3;
+}
+
+/* コードブロック: 深海ネイビー背景＋シアンボーダー */
+.lesson-content pre {
+	background: #082f49;
+	color: #d8ecf8;
+	border-radius: 14px;
+	padding: 1.25rem 1.5rem;
+	margin: 1.5rem 0;
+	overflow-x: auto;
+	box-shadow: 0 8px 24px rgba(8, 47, 73, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.lesson-content pre code {
+	background: transparent;
+	color: inherit;
+	padding: 0;
+	font-size: 0.8125rem;
+	font-family: ui-monospace, monospace;
+	border: none;
+}
+
+.lesson-content a {
+	color: #0284c7;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	font-weight: 500;
+	transition: color 0.15s, text-shadow 0.15s;
+}
+
+.lesson-content a:hover {
+	color: #0369a1;
+	text-shadow: 0 0 12px rgba(125, 211, 252, 0.8);
+}
+
+/* HR: 海の光の帯 */
+.lesson-content hr {
+	border: none;
+	height: 2px;
+	background: linear-gradient(to right, transparent, #38bdf8, #22d3ee, #67e8f9, transparent);
+	margin: 2.5rem 0;
+	border-radius: 2px;
+	box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+/* テーブル: 水色ガラスの表 */
+.lesson-content table {
+	min-width: 100%;
+	border-collapse: collapse;
+	margin: 1.5rem 0;
+	font-size: 0.875rem;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 14px rgba(14, 116, 208, 0.12);
+	border: 1px solid rgba(125, 211, 252, 0.5);
+}
+
+.lesson-content thead {
+	background: linear-gradient(135deg, #0369a1, #0ea5e9);
+}
+
+.lesson-content th {
+	padding: 0.75rem 1rem;
+	font-weight: 600;
+	color: #ffffff;
+	text-align: left;
+	border-bottom: 1px solid rgba(125, 211, 252, 0.6);
+}
+
+.lesson-content td {
+	border-bottom: 1px solid rgba(186, 230, 253, 0.7);
+	padding: 0.625rem 1rem;
+	color: #2b4d6b;
+}
+
+.lesson-content tr:nth-child(even) td {
+	background: rgba(224, 242, 254, 0.5);
+}
+
+.lesson-content tr:last-child td {
+	border-bottom: none;
+}
+
+.lesson-content img {
+	max-width: 100%;
+	border-radius: 12px;
+	margin: 1.25rem 0;
+	border: 1px solid rgba(186, 230, 253, 0.8);
+	box-shadow: 0 8px 24px rgba(14, 116, 208, 0.15);
+}
