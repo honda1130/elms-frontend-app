@@ -66,3 +66,32 @@ export type UserLessonGroupDto = {
 	updatedAt: string;
 	userLessons: UserLessonDto[];
 };
+
+export type LessonTagSearchLessonDto = {
+	lessonId: string;
+	lessonOrder: number;
+	title: string;
+	tags: TagDto[];
+};
+
+export type LessonTagSearchLessonGroupDto = {
+	lessonGroupId: string;
+	lessonGroupOrder: number;
+	lessonGroupTitle: string;
+	lessons: LessonTagSearchLessonDto[];
+};
+
+export type LessonTagSearchCourseDto = {
+	courseId: string;
+	courseOrder: number;
+	courseTitle: string;
+	lessonGroups: LessonTagSearchLessonGroupDto[];
+};
+
+export type LessonTagSearchResultDto = {
+	tag: string;
+	courses: LessonTagSearchCourseDto[];
+	pageNum: number;
+	pageSize: number;
+	totalSize: number;
+};
