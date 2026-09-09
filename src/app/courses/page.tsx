@@ -137,7 +137,7 @@ export default function Home() {
 					</div>
 
 					{/* タグ検索 */}
-					<LessonTagSearch enrolledCourseIds={userCourseDtos?.map((course) => course.id) ?? []} />
+					<LessonTagSearch />
 
 					{/* マイコース */}
 					<div className="mt-6 pb-8">

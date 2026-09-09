@@ -19,12 +19,9 @@ const TABLE_HEADERS = ["コース", "レッスングループ", "レッスン", 
 /**
  * タグに紐づくレッスンを全コース横断で検索する。
  *
- * <p>受講中コースのレッスンだけレッスン視聴画面へ遷移できる。
- * 未受講コースのレッスンは検索結果には出るが、遷移先で参照できないため行を押せないようにする。
- *
- * @param enrolledCourseIds 受講中コースのID一覧
+ * <p>検索結果の行を押すと、そのレッスンの視聴画面へ遷移する。
  */
-export default function LessonTagSearch({ enrolledCourseIds }: { enrolledCourseIds: string[] }) {
+export default function LessonTagSearch() {
 	const router = useRouter();
 
 	// 入力途中の値で再取得しないよう、入力欄の値(tagInput)と検索へ適用済みの値(appliedTag)を分けて持つ
@@ -60,8 +57,6 @@ export default function LessonTagSearch({ enrolledCourseIds }: { enrolledCourseI
 
 	// ページングの単位はレッスン件数（totalSizeは一致したレッスンの総件数）
 	const totalPageNum = searchResult ? Math.ceil(searchResult.totalSize / searchResult.pageSize) : 1;
-
-	const enrolledCourseIdSet = new Set(enrolledCourseIds);
 
 	// 検索条件を適用する。実際の取得はSWRがキーの変化を検知して行う
 	const applySearch = () => {
@@ -187,47 +182,32 @@ export default function LessonTagSearch({ enrolledCourseIds }: { enrolledCourseI
 												</tr>
 											</thead>
 											<tbody className="divide-y divide-sky-50">
-												{rows.map(({ course, lessonGroup, lesson }) => {
-													const isEnrolled = enrolledCourseIdSet.has(course.courseId);
-													return (
-														<tr
-															key={lesson.lessonId}
-															onClick={
-																isEnrolled
-																	? () =>
-																			toLessonView(
-																				course.courseId,
-																				lessonGroup.lessonGroupId,
-																				lesson.lessonId
-																			)
-																	: undefined
-															}
-															className={`transition-colors ${
-																isEnrolled ? "hover:bg-sky-50/80 cursor-pointer" : ""
-															}`}
-														>
-															<td className="px-4 py-3">
-																<div className="flex items-center gap-2">
-																	<span className="text-sm text-slate-700">{course.courseTitle}</span>
-																	{!isEnrolled && (
-																		<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap border bg-slate-100 border-slate-200 text-slate-500">
-																			未受講
-																		</span>
-																	)}
-																</div>
-															</td>
-															<td className="px-4 py-3 text-sm text-slate-500">
-																{lessonGroup.lessonGroupTitle}
-															</td>
-															<td className="px-4 py-3 text-sm font-semibold text-slate-800">
-																{lesson.title}
-															</td>
-															<td className="px-4 py-3">
-																<TagList tags={lesson.tags} />
-															</td>
-														</tr>
-													);
-												})}
+												{rows.map(({ course, lessonGroup, lesson }) => (
+													<tr
+														key={lesson.lessonId}
+														onClick={() =>
+															toLessonView(
+																course.courseId,
+																lessonGroup.lessonGroupId,
+																lesson.lessonId
+															)
+														}
+														className="hover:bg-sky-50/80 cursor-pointer transition-colors"
+													>
+														<td className="px-4 py-3 text-sm text-slate-700">
+															{course.courseTitle}
+														</td>
+														<td className="px-4 py-3 text-sm text-slate-500">
+															{lessonGroup.lessonGroupTitle}
+														</td>
+														<td className="px-4 py-3 text-sm font-semibold text-slate-800">
+															{lesson.title}
+														</td>
+														<td className="px-4 py-3">
+															<TagList tags={lesson.tags} />
+														</td>
+													</tr>
+												))}
 											</tbody>
 										</table>
 									</div>
