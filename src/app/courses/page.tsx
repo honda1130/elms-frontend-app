@@ -13,6 +13,7 @@ import { NewsDto, NewsPageDto } from '@/features/news/types';
 import { UserCourseDto } from '@/features/course/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
+import LessonTagSearch from '@/features/lesson/components/LessonTagSearch';
 
 export default function Home() {
 	const router = useRouter();
@@ -134,6 +135,9 @@ export default function Home() {
 							)}
 						</div>
 					</div>
+
+					{/* タグ検索 */}
+					<LessonTagSearch />
 
 					{/* マイコース */}
 					<div className="mt-6 pb-8">

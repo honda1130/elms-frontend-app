@@ -45,4 +45,7 @@ export const swrKeys = {
 
 	/** お知らせ詳細 */
 	news: (newsId: string) => `${API_URL}/api/news/${newsId}`,
+
+	/** タグに紐づくレッスンの横断検索（検索条件つき） */
+	lessonSearch: (query: string) => `${API_URL}/api/lessons/search?${query}`,
 } as const;
