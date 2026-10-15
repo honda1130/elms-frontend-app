@@ -4,6 +4,7 @@ import CourseCard from "./CourseCard";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { useApiQuery } from "@/hooks/useApiQuery";
 import { swrKeys } from "@/lib/swrKeys";
+import { downloadBlob } from "@/lib/downloadUtil";
 import { CourseDto, CoursePageDto } from "@/features/course/types";
 import Link from "next/link";
 import { useState } from "react";
@@ -58,13 +59,7 @@ export default function CourseListForAdmin() {
 		try {
 			const response = await executeExportAllLessonsCsvApi(`${API_URL}/api/courses/lessons/export`, "GET");
 			if (!response) return;
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "lessons.csv";
-			a.click();
-			window.URL.revokeObjectURL(url);
+			downloadBlob(await response.blob(), "lessons.csv");
 		} catch (error) {
 			console.error("LessonsCsv出力エラー:", error);
 		}

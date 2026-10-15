@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/apiUrl';
 import { useRouter } from "next/navigation";
 import { NewsDto, NewsPageDto } from "@/features/news/types";
 import { convertDateString } from "@/lib/dateUtil";
+import { downloadBlob } from "@/lib/downloadUtil";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { useEffect, useState, useCallback } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -52,6 +53,13 @@ export default function NewsList() {
 	// お知らせ削除API
 	const { executeApi: executeDeleteNewsApi } = useApiRequest();
 
+	// お知らせCSV出力API
+	const {
+		executeApi: executeExportNewsCsvApi,
+		isLoading: isLoadingExportNewsCsvApi,
+		isError: isErrorExportNewsCsvApi,
+	} = useApiRequest();
+
 	// お知らせ詳細画面に遷移する
 	const toNewsDetailPage = (newsId: string) => {
 		router.push(`/admin/news/${newsId}/edit`);
@@ -74,6 +82,22 @@ export default function NewsList() {
 		} else {
 			// pageNumが1以外から1に変更されたらuseEffectにより、fetchNewsが実行される。
 			setPageNum(1);
+		}
+	};
+
+	// お知らせCSV出力ボタン押下時に呼ばれるハンドラー
+	const handleExportNewsCsv = async () => {
+		try {
+			const response = await executeExportNewsCsvApi(`${API_URL}/api/news/export`, "GET");
+			if (!response) return;
+			// 500等はuseApiRequestでエラー扱いにならないため、エラー内容をCSVとして保存しないようここで弾く
+			if (!response.ok) {
+				alert("CSV出力に失敗しました");
+				return;
+			}
+			downloadBlob(await response.blob(), "news.csv");
+		} catch (error) {
+			console.error("NewsCsv出力エラー:", error);
 		}
 	};
 
@@ -142,12 +166,24 @@ export default function NewsList() {
 						</p>
 						<h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-aurora">お知らせ一覧</h1>
 					</div>
-					<button
-						onClick={() => router.push("/admin/news/new")}
-						className="btn-aurora px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap cursor-pointer self-start md:self-auto"
-					>
-						＋ お知らせを新規作成
-					</button>
+					<div className="flex flex-wrap gap-2 self-start md:self-auto">
+						<button
+							onClick={handleExportNewsCsv}
+							className="btn-ghost px-4 py-2.5 rounded-xl whitespace-nowrap cursor-pointer text-sm font-medium disabled:opacity-50"
+							disabled={isLoadingExportNewsCsvApi}
+						>
+							{isLoadingExportNewsCsvApi ? "出力中..." : "CSV出力"}
+						</button>
+						{isErrorExportNewsCsvApi && (
+							<p className="text-rose-500 text-sm self-center">CSV出力に失敗しました</p>
+						)}
+						<button
+							onClick={() => router.push("/admin/news/new")}
+							className="btn-aurora px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap cursor-pointer"
+						>
+							＋ お知らせを新規作成
+						</button>
+					</div>
 				</div>
 
 				{/* 検索バー */}
