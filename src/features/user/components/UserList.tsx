@@ -9,6 +9,7 @@ import Thumbnail from "@/components/Thumbnail";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { useApiQuery } from "@/hooks/useApiQuery";
 import { swrKeys } from "@/lib/swrKeys";
+import { downloadBlob } from "@/lib/downloadUtil";
 import { pageContainer } from "@/lib/pageLayout";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -142,13 +143,7 @@ export default function UserList() {
 		try{
 			const response = await executeExportUsersCsvApi(`${API_URL}/api/users/export`, "GET");
 			if(!response) return;
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "users.csv"; 
-			a.click();
-			window.URL.revokeObjectURL(url);
+			downloadBlob(await response.blob(), "users.csv");
 		} catch(error){
 			console.error("UsersCsv出力エラー:", error);
 		}

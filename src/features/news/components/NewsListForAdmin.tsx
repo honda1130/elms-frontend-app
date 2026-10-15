@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/apiUrl';
 import { useRouter } from "next/navigation";
 import { NewsDto, NewsPageDto } from "@/features/news/types";
 import { convertDateString } from "@/lib/dateUtil";
+import { downloadBlob } from "@/lib/downloadUtil";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { useEffect, useState, useCallback } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -94,13 +95,7 @@ export default function NewsList() {
 				alert("CSV出力に失敗しました");
 				return;
 			}
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "news.csv";
-			a.click();
-			window.URL.revokeObjectURL(url);
+			downloadBlob(await response.blob(), "news.csv");
 		} catch (error) {
 			console.error("NewsCsv出力エラー:", error);
 		}
